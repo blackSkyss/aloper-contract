@@ -11,6 +11,7 @@
             public const string GetContractEndpoint = ApiEndpoint + "/Contracts/GetContractByID/{id}";
             public const string UpdateContractEndpoint = ApiEndpoint + "/Contracts/UpdateContract/{id}";
             public const string CancelContractEndpoint = ApiEndpoint + "/Contracts/EndOfContractByIdRoom/{id}";
+            public const string ExportPDFFile = ApiEndpoint + "/Contracts/ExportPDF";
         }
     }
 }

@@ -49,7 +49,7 @@ namespace MBKC.API.Middlewares
             Error error = new Error()
             {
                 StatusCode = context.Response.StatusCode,
-                Message = JsonConvert.DeserializeObject<List<ErrorDetail>>(ex.Message)
+                Message = JsonConvert.DeserializeObject<List<ErrorDetail>>(ex.Message)!
             };
 
 

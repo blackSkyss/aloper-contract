@@ -63,6 +63,7 @@ namespace ALOPER.API.Extentions
             //Add middleware extentions
             app.ConfigureExceptionMiddleware();
             app.MapControllers();
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NBaF5cXmZCeExzWmFZfVpgdVdMYFtbR3VPMyBoS35RckVmWXlccnRTRmVeU0V0");
             return app;
         }
 

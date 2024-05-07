@@ -1,16 +1,14 @@
 ﻿using ALOPER.Repository.Infrastructures;
-using ALOPER.Repository.Models;
 using ALOPER.Service.DTOs;
 using ALOPER.Service.Services.Interfaces;
 using AutoMapper;
 using MBKC.Service.Exceptions;
 using MBKC.Service.Utils;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Spire.Doc;
+using Syncfusion.DocIO.DLS;
+using Syncfusion.DocIO;
+using Document = Spire.Doc.Document;
+
 
 namespace ALOPER.Service.Services.Implements
 {
@@ -24,6 +22,7 @@ namespace ALOPER.Service.Services.Implements
             _unitOfWork = (UnitOfWork)unitOfWork;
             _mapper = mapper;
         }
+
         public async Task<ContractResponse> GetContractById(string id)
         {
             try
@@ -122,7 +121,6 @@ namespace ALOPER.Service.Services.Implements
                 string error = ErrorUtil.GetErrorString("update contract", ex.Message);
                 throw new NotFoundException(error);
             }
-
         }
 
         public async Task CancelContract(string id)
@@ -140,6 +138,70 @@ namespace ALOPER.Service.Services.Implements
                 string error = ErrorUtil.GetErrorString("cancel contract", ex.Message);
                 throw new NotFoundException(error);
             }
+        }
+
+        public Task<byte[]> ExportPDFFile(string path, DataContractRequest contract)
+        {
+            byte[]? docxBytes = null;
+            byte[]? pdfBytes = null;
+
+            #region input data into docx
+            using (WordDocument document = new WordDocument())
+            {
+                using (var docStream = File.OpenRead(path))
+                {
+                    document.Open(docStream, FormatType.Docx);
+
+                    document.Replace("fullnamesalep", contract.FullNameSale, true, true);
+                    document.Replace("passportsalep", contract.PassportNumberSale, true, true);
+                    document.Replace("phonesalep", contract.PhoneNumberSale, true, true);
+                    document.Replace("postitionsalep", contract.PositionSale, true, true);
+                    document.Replace("fullnamecusp", contract.FullNameCus, true, true);
+                    document.Replace("passportcusp", contract.PassportNumberCus, true, true);
+                    document.Replace("phonecusp", contract.FullNameCus, true, true);
+                    document.Replace("placep", contract.PlaceCus, true, true);
+                    document.Replace("addressp", contract.Address, true, true);
+                    document.Replace("roomcodep", contract.RoomCode, true, true);
+                    document.Replace("leasetermp", contract.LeaseTerm, true, true);
+                    document.Replace("rentalfeep", contract.RentalFee.ToString(), true, true);
+                    document.Replace("checkinp", contract.CheckinDate.ToString("dd/MM/yyyy"), true, true);
+                    document.Replace("bookingamountp", contract.BookingAmount.ToString(), true, true);
+                    document.Replace("additionamountp", contract.AdditionalAmount.ToString(), true, true);
+                    document.Replace("deadlinep", contract.PaymentDeadline.ToString("dd/MM/yyyy"), true, true);
+                    document.Replace("rewardp", string.IsNullOrEmpty(contract.Reward) ? "......" : contract.Reward, true, true);
+                    document.Replace("electricityfeep", contract.ElectricityFee.ToString(), true, true);
+                    document.Replace("waterfeep", contract.WaterFee.ToString(), true, true);
+                    document.Replace("parkingfeep", contract.ParkingFee.ToString(), true, true);
+                    document.Replace("manafeep", contract.ManagementFee.ToString(), true, true);
+                    document.Replace("otherfeep", contract.OthersFee?.ToString() ?? "......", true, true);
+                    document.Replace("ddp", contract.SignDate.Day.ToString(), true, true);
+                    document.Replace("mmp", contract.SignDate.Month.ToString(), true, true);
+                    document.Replace("yyyyp",contract.SignDate.Year.ToString(), true, true);
+                    document.Replace("signcustomer", contract.SignCustomer, true, true);
+                    document.Replace("signsale", contract.SignSale, true, true);
+
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        document.Save(memoryStream, FormatType.Docx);
+                        docxBytes = memoryStream.ToArray();
+                    }
+                }
+            }
+            #endregion
+
+            #region convert docx to pdf
+            using (var doc = new Document())
+            {
+                doc.LoadFromStream(new MemoryStream(docxBytes), FileFormat.Docx);
+                using (var pdfStream = new MemoryStream())
+                {
+                    doc.SaveToStream(pdfStream, FileFormat.PDF);
+                    pdfBytes = pdfStream.ToArray();
+                }
+            }
+            #endregion
+
+            return Task.FromResult(pdfBytes);
         }
     }
 }

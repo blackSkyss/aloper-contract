@@ -17,7 +17,10 @@ namespace ALOPER.Repository.Repositories.Implements
 
         public async Task<Contract?> GetContractById(string id)
         {
-            return await _dbContext.Contracts.FirstOrDefaultAsync(c => c.Id.ToLower().Equals(id.ToLower()));
+            return await _dbContext.Contracts
+                                   .Include(c => c.Services)
+                                   .Include(c => c.Furnitures)
+                                   .FirstOrDefaultAsync(c => c.Id.ToLower().Equals(id.ToLower()));
         }
     }
 }

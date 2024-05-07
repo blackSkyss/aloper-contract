@@ -13,5 +13,6 @@ namespace ALOPER.Service.Services.Interfaces
         Task<ContractResponse> GetContractById(string id);
         Task UpdateContract(UpdateContractRequest contract, string id);
         Task CancelContract(string id);
+        Task<Byte[]> ExportPDFFile(string path, DataContractRequest contract);
     }
 }

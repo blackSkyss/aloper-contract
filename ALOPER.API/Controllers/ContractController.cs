@@ -6,6 +6,7 @@ using MBKC.API.Constants;
 using MBKC.Service.Exceptions;
 using MBKC.Service.Utils;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace ALOPER.API.Controllers
 {
@@ -15,13 +16,16 @@ namespace ALOPER.API.Controllers
         private IContractService _contractService;
         private IValidator<InsertContractRequest> _insertContractValidator;
         private IValidator<UpdateContractRequest> _updateContractValidator;
-        public ContractController(IContractService contractService, 
+        private readonly IWebHostEnvironment environment;
+        public ContractController(IContractService contractService,
             IValidator<InsertContractRequest> insertContractValidato,
-            IValidator<UpdateContractRequest> updateContractValidator)
+            IValidator<UpdateContractRequest> updateContractValidator,
+            IWebHostEnvironment environment)
         {
             _contractService = contractService;
             _insertContractValidator = insertContractValidato;
             _updateContractValidator = updateContractValidator;
+            this.environment = environment;
         }
 
         #region Insert Contract
@@ -227,6 +231,54 @@ namespace ALOPER.API.Controllers
             }
             await _contractService.UpdateContract(contract, id);
             return Ok("Update contract successfully.");
+        }
+        #endregion
+
+        #region Export PDF File
+        /// <summary>
+        /// Xuất file PDF
+        /// </summary>
+        /// <returns>
+        /// download file.
+        /// </returns>
+        /// <remarks>
+        ///     Sample request:
+        ///
+        ///         POST
+        ///            {
+        ///              "fullNameSale": "Đỗ Vân Trường",
+        ///              "passportNumberSale": "033201001789",
+        ///              "phoneNumberSale": "0987654321",
+        ///              "positionSale": "Sale",
+        ///              "fullNameCus": "Lê Hồng Thành",
+        ///              "passportNumberCus": "03320100987",
+        ///              "phoneNumberCus": "0123456789",
+        ///              "placeCus": "64, Đường hàng tre, TPHCM",
+        ///              "address": "TPHCM",
+        ///              "roomCode": "1234",
+        ///              "leaseTerm": "2 năm",
+        ///              "rentalFee": 2000000,
+        ///              "checkinDate": "2024-05-06T13:36:58.183Z",
+        ///              "bookingAmount": 100000,
+        ///              "additionalAmount": 200000,
+        ///              "paymentDeadline": "2024-05-10T13:36:58.183Z",
+        ///              "reward": "Chào mừng tháng 5",
+        ///              "electricityFee": 2000,
+        ///              "waterFee": 3000,
+        ///              "parkingFee": 5000,
+        ///              "managementFee": 10000,
+        ///              "othersFee": 20000,
+        ///              "signDate": "2024-05-06T03:00:10.953Z",
+        ///              "signCustomer": "Lê Hồng Thành",
+        ///              "signSale": "Đỗ Vân Trường"
+        ///            }
+        /// </remarks>
+        [HttpPost(APIEndPointConstant.ContractEndpoint.ExportPDFFile)]
+        public async Task<IActionResult> ExportPDFFile([FromBody] DataContractRequest contract)
+        {
+            var filepath = Path.Combine(environment.ContentRootPath, "Files", "test_aloper.docx");
+            var file = await _contractService.ExportPDFFile(filepath, contract);
+            return File(file, "application/pdf", "test_aloper.pdf");
         }
         #endregion
 
