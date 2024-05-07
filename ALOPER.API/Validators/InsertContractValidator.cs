@@ -16,12 +16,12 @@ namespace ALOPER.API.Validators
             RuleFor(c => c.IdRoom)
              .Cascade(CascadeMode.Stop)
              .NotNull().WithMessage("{PropertyName} is not null.")
-             .GreaterThan(0).WithMessage("{PropertyName} is not suitable id in the system.");
+             .GreaterThan(0).WithMessage("{PropertyName} is greater than 0.");
 
             RuleFor(c => c.rentalTerm)
              .Cascade(CascadeMode.Stop)
              .NotNull().WithMessage("{PropertyName} is not null.")
-             .GreaterThan(0).WithMessage("{PropertyName} is not suitable id in the system.");
+             .GreaterThan(0).WithMessage("{PropertyName} is greater than 0.");
 
             RuleFor(c => c.DepositDate)
              .Cascade(CascadeMode.Stop)
@@ -30,12 +30,12 @@ namespace ALOPER.API.Validators
             RuleFor(c => c.DepositAmount)
             .Cascade(CascadeMode.Stop)
             .NotNull().WithMessage("{PropertyName} is not null.")
-            .GreaterThan(0).WithMessage("{PropertyName} is not suitable id in the system.");
+            .GreaterThan(0).WithMessage("{PropertyName} is greater than 0.");
 
             RuleFor(c => c.RentalPrice)
             .Cascade(CascadeMode.Stop)
             .NotNull().WithMessage("{PropertyName} is not null.")
-            .GreaterThan(0).WithMessage("{PropertyName} is not suitable id in the system.");
+            .GreaterThan(0).WithMessage("{PropertyName} is greater than 0.");
 
             RuleFor(c => c.RentalStartDate)
              .Cascade(CascadeMode.Stop)
@@ -44,12 +44,12 @@ namespace ALOPER.API.Validators
             RuleFor(c => c.NumberOfPeople)
              .Cascade(CascadeMode.Stop)
              .NotNull().WithMessage("{PropertyName} is not null.")
-             .GreaterThan(0).WithMessage("{PropertyName} is not suitable id in the system.");
+             .GreaterThan(0).WithMessage("{PropertyName} is greater than 0.");
 
             RuleFor(c => c.NumberOfVehicle)
              .Cascade(CascadeMode.Stop)
              .NotNull().WithMessage("{PropertyName} is not null.")
-             .GreaterThan(0).WithMessage("{PropertyName} is not suitable id in the system.");
+             .GreaterThan(0).WithMessage("{PropertyName} is greater than 0.");
 
             RuleFor(c => c.FullName)
              .Cascade(CascadeMode.Stop)

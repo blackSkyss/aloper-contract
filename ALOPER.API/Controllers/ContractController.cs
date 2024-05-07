@@ -16,15 +16,18 @@ namespace ALOPER.API.Controllers
         private IContractService _contractService;
         private IValidator<InsertContractRequest> _insertContractValidator;
         private IValidator<UpdateContractRequest> _updateContractValidator;
+        private IValidator<DataContractRequest> _dataContractValidator;
         private readonly IWebHostEnvironment environment;
         public ContractController(IContractService contractService,
             IValidator<InsertContractRequest> insertContractValidato,
             IValidator<UpdateContractRequest> updateContractValidator,
+            IValidator<DataContractRequest> dataContractValidator, 
             IWebHostEnvironment environment)
         {
             _contractService = contractService;
             _insertContractValidator = insertContractValidato;
             _updateContractValidator = updateContractValidator;
+            _dataContractValidator = dataContractValidator;
             this.environment = environment;
         }
 
@@ -276,6 +279,13 @@ namespace ALOPER.API.Controllers
         [HttpPost(APIEndPointConstant.ContractEndpoint.ExportPDFFile)]
         public async Task<IActionResult> ExportPDFFile([FromBody] DataContractRequest contract)
         {
+            ValidationResult validationResult = await this._dataContractValidator.ValidateAsync(contract);
+            if (validationResult.IsValid == false)
+            {
+                string errors = ErrorUtil.GetErrorsString(validationResult);
+                throw new BadRequestException(errors);
+            }
+
             var filepath = Path.Combine(environment.ContentRootPath, "Files", "test_aloper.docx");
             var file = await _contractService.ExportPDFFile(filepath, contract);
             return File(file, "application/pdf", "test_aloper.pdf");
